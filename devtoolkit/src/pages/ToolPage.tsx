@@ -2,6 +2,7 @@ import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "react-router-dom";
 import { getToolById } from "../data/tools";
 import ToolCard from "../components/tools/ToolCard";
+import ToolRenderer from "../components/tools/ToolRenderer";
 
 function ToolPage() {
   const { toolId } = useParams<{ toolId: string }>();
@@ -81,17 +82,8 @@ function ToolPage() {
           </span>
         </div>
 
-        <div className="flex min-h-[420px] items-center justify-center p-6">
-          <div className="max-w-md text-center">
-            <h2 className="text-lg font-medium text-[var(--foreground)]">
-              This tool is being prepared.
-            </h2>
-
-            <p className="mt-2 text-sm leading-6 text-[var(--muted)]">
-              We're building this utility to be fast, simple and
-              completely browser-based.
-            </p>
-          </div>
+        <div className="p-4 sm:p-6">
+          <ToolRenderer toolId={tool.id} />
         </div>
       </section>
 
