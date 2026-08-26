@@ -5,6 +5,7 @@ import {
   FileText,
   Trash2,
 } from "lucide-react";
+
 import {
   useMemo,
   useState,
@@ -61,10 +62,17 @@ admin@devtoolkit.io
 not-an-email`;
 
 function RegexTester() {
-  const [pattern, setPattern] = useState("");
-  const [text, setText] = useState("");
-  const [flags, setFlags] = useState("g");
-  const [copied, setCopied] = useState(false);
+  const [pattern, setPattern] =
+    useState("");
+
+  const [text, setText] =
+    useState("");
+
+  const [flags, setFlags] =
+    useState("g");
+
+  const [copied, setCopied] =
+    useState(false);
 
   /*
    * ---------------------------------------------------------
@@ -86,7 +94,11 @@ function RegexTester() {
       flags,
       text,
     );
-  }, [pattern, flags, text]);
+  }, [
+    pattern,
+    flags,
+    text,
+  ]);
 
   /*
    * ---------------------------------------------------------
@@ -94,10 +106,13 @@ function RegexTester() {
    * ---------------------------------------------------------
    */
 
-  const toggleFlag = (flag: string) => {
+  const toggleFlag = (
+    flag: string,
+  ) => {
     setFlags((current) => {
       if (current.includes(flag)) {
-        const nextFlags = current.replace(flag, "");
+        const nextFlags =
+          current.replace(flag, "");
 
         trackToolUsed(
           "regex-tester",
@@ -108,17 +123,22 @@ function RegexTester() {
       }
 
       /*
-      * Keep flags in the normal JavaScript order.
-      */
-      const order = "dgimsuvy";
+       * Keep flags in the normal
+       * JavaScript order.
+       */
+      const order =
+        "dgimsuvy";
 
-      const nextFlags = [...new Set(`${current}${flag}`)]
-        .sort(
-          (a, b) =>
-            order.indexOf(a) -
-            order.indexOf(b),
-        )
-        .join("");
+      const nextFlags =
+        [...new Set(
+          `${current}${flag}`,
+        )]
+          .sort(
+            (a, b) =>
+              order.indexOf(a) -
+              order.indexOf(b),
+          )
+          .join("");
 
       trackToolUsed(
         "regex-tester",
@@ -140,7 +160,11 @@ function RegexTester() {
     setText(SAMPLE_TEXT);
     setFlags("gm");
     setCopied(false);
-    trackToolUsed("regex-tester", "sample");
+
+    trackToolUsed(
+      "regex-tester",
+      "sample",
+    );
   };
 
   /*
@@ -196,91 +220,96 @@ function RegexTester() {
    * ---------------------------------------------------------
    */
 
-  const highlightedText = useMemo(() => {
-    if (
-      !text ||
-      !result.valid ||
-      result.matches.length === 0
-    ) {
-      return null;
-    }
+  const highlightedText =
+    useMemo(() => {
+      if (
+        !text ||
+        !result.valid ||
+        result.matches.length === 0
+      ) {
+        return null;
+      }
 
-    const nodes: ReactNode[] = [];
+      const nodes: ReactNode[] = [];
 
-    let cursor = 0;
+      let cursor = 0;
 
-    result.matches.forEach(
-      (match, index) => {
-        const start = match.index;
-        const end =
-          match.index + match.length;
+      result.matches.forEach(
+        (match, index) => {
+          const start = match.index;
 
-        /*
-         * Ignore invalid ranges.
-         */
-        if (
-          start < cursor ||
-          start > text.length
-        ) {
-          return;
-        }
+          const end =
+            match.index +
+            match.length;
 
-        /*
-         * Normal text before the match.
-         */
-        if (start > cursor) {
-          nodes.push(
-            <span
-              key={`text-${index}`}
-            >
-              {text.slice(
-                cursor,
-                start,
-              )}
-            </span>,
-          );
-        }
+          /*
+           * Ignore invalid ranges.
+           */
+          if (
+            start < cursor ||
+            start > text.length
+          ) {
+            return;
+          }
 
-        /*
-         * Matched section.
-         */
-        if (match.length > 0) {
-          nodes.push(
-            <mark
-              key={`match-${index}`}
-              className="rounded bg-[var(--accent)]/30 px-0.5 text-[var(--foreground)]"
-            >
-              {text.slice(
-                start,
-                end,
-              )}
-            </mark>,
-          );
+          /*
+           * Normal text before match.
+           */
+          if (start > cursor) {
+            nodes.push(
+              <span
+                key={`text-${index}`}
+              >
+                {text.slice(
+                  cursor,
+                  start,
+                )}
+              </span>,
+            );
+          }
 
-          cursor = end;
-        }
-      },
-    );
+          /*
+           * Matched section.
+           */
+          if (match.length > 0) {
+            nodes.push(
+              <mark
+                key={`match-${index}`}
+                className="rounded bg-[var(--accent)]/30 px-0.5 text-[var(--foreground)]"
+              >
+                {text.slice(
+                  start,
+                  end,
+                )}
+              </mark>,
+            );
 
-    /*
-     * Remaining text.
-     */
-    if (cursor < text.length) {
-      nodes.push(
-        <span key="remaining">
-          {text.slice(cursor)}
-        </span>,
+            cursor = end;
+          }
+        },
       );
-    }
 
-    return nodes;
-  }, [
-    text,
-    result,
-  ]);
+      /*
+       * Remaining text.
+       */
+      if (cursor < text.length) {
+        nodes.push(
+          <span key="remaining">
+            {text.slice(
+              cursor,
+            )}
+          </span>,
+        );
+      }
+
+      return nodes;
+    }, [
+      text,
+      result,
+    ]);
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       {/* Privacy */}
       <ToolPrivacyNotice>
         Regex matching happens entirely in your
@@ -288,20 +317,20 @@ function RegexTester() {
       </ToolPrivacyNotice>
 
       {/* Regex editor */}
-      <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-        <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-          <div className="flex items-center gap-2">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
+          <div className="flex min-w-0 items-center gap-2">
             <Code2
               size={16}
-              className="text-[var(--accent)]"
+              className="shrink-0 text-[var(--accent)]"
             />
 
-            <span className="text-sm font-medium">
+            <span className="truncate text-sm font-medium">
               Regular Expression
             </span>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1">
             <button
               type="button"
               onClick={loadSample}
@@ -330,8 +359,8 @@ function RegexTester() {
         </div>
 
         {/* Pattern input */}
-        <div className="flex items-center px-4">
-          <span className="font-mono text-lg text-[var(--subtle)]">
+        <div className="flex min-w-0 items-center px-4">
+          <span className="shrink-0 font-mono text-lg text-[var(--subtle)]">
             /
           </span>
 
@@ -341,6 +370,7 @@ function RegexTester() {
               setPattern(
                 event.target.value,
               );
+
               setCopied(false);
             }}
             placeholder="Enter your regex..."
@@ -348,7 +378,7 @@ function RegexTester() {
             className="min-w-0 flex-1 bg-transparent px-3 py-4 font-mono text-sm text-[var(--foreground)] outline-none placeholder:text-[var(--subtle)]"
           />
 
-          <span className="font-mono text-lg text-[var(--subtle)]">
+          <span className="shrink-0 font-mono text-lg text-[var(--subtle)]">
             /{flags}
           </span>
         </div>
@@ -392,20 +422,20 @@ function RegexTester() {
       </section>
 
       {/* Test text */}
-      <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-        <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-          <div className="flex items-center gap-2">
+      <section className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+        <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
+          <div className="flex min-w-0 items-center gap-2">
             <FileText
               size={16}
-              className="text-[var(--accent)]"
+              className="shrink-0 text-[var(--accent)]"
             />
 
-            <span className="text-sm font-medium">
+            <span className="truncate text-sm font-medium">
               Test String
             </span>
           </div>
 
-          <span className="text-xs text-[var(--subtle)]">
+          <span className="shrink-0 text-xs text-[var(--subtle)]">
             {text.length.toLocaleString()}{" "}
             characters
           </span>
@@ -420,7 +450,7 @@ function RegexTester() {
           }
           placeholder="Enter text to test..."
           spellCheck={false}
-          className="min-h-[220px] w-full resize-y bg-transparent p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none placeholder:text-[var(--subtle)]"
+          className="min-h-[200px] w-full resize-y bg-transparent p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none placeholder:text-[var(--subtle)] sm:min-h-[220px]"
         />
       </section>
 
@@ -434,11 +464,12 @@ function RegexTester() {
 
       {/* No regex */}
       {!pattern && (
-        <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+        <section className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
           <ToolEmptyState
             icon={Code2}
             title="Start testing your regex"
             description="Enter a regular expression and some test text to see matches here."
+            minHeight="min-h-[240px] sm:min-h-[320px]"
           />
         </section>
       )}
@@ -446,11 +477,11 @@ function RegexTester() {
       {/* Results */}
       {pattern &&
         result.valid && (
-          <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+          <section className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
             {/* Result header */}
-            <div className="flex flex-col gap-3 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-1.5">
+            <div className="flex min-w-0 flex-col gap-3 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex shrink-0 items-center gap-1.5">
                   <span className="size-1.5 rounded-full bg-[var(--success)]" />
 
                   <span className="text-xs text-[var(--muted)]">
@@ -458,9 +489,9 @@ function RegexTester() {
                   </span>
                 </div>
 
-                <span className="h-3 w-px bg-[var(--border)]" />
+                <span className="h-3 w-px shrink-0 bg-[var(--border)]" />
 
-                <span className="text-xs text-[var(--muted)]">
+                <span className="shrink-0 text-xs text-[var(--muted)]">
                   {result.matches.length}{" "}
                   {result.matches.length ===
                   1
@@ -469,7 +500,7 @@ function RegexTester() {
                 </span>
               </div>
 
-              <code className="break-all text-xs text-[var(--subtle)]">
+              <code className="min-w-0 break-all text-xs text-[var(--subtle)]">
                 /{pattern}/{flags}
               </code>
             </div>
@@ -495,7 +526,7 @@ function RegexTester() {
             )}
 
             {/* Match list */}
-            <div>
+            <div className="min-w-0">
               <div className="border-b border-[var(--border)] px-4 py-3">
                 <span className="text-xs font-medium text-[var(--muted)]">
                   Match details
@@ -516,9 +547,9 @@ function RegexTester() {
                     ) => (
                       <div
                         key={`${match.index}-${index}`}
-                        className="px-4 py-3"
+                        className="min-w-0 px-4 py-3"
                       >
-                        <div className="flex items-start gap-3">
+                        <div className="flex min-w-0 items-start gap-3">
                           <span className="w-6 shrink-0 pt-2 text-right font-mono text-[10px] text-[var(--subtle)]">
                             {index + 1}
                           </span>
@@ -545,7 +576,7 @@ function RegexTester() {
 
                         {match.groups.length >
                           0 && (
-                          <div className="ml-9 mt-3">
+                          <div className="ml-9 mt-3 min-w-0">
                             <span className="mb-2 block text-[10px] font-medium uppercase tracking-wide text-[var(--subtle)]">
                               Capture groups
                             </span>
@@ -560,7 +591,7 @@ function RegexTester() {
                                     key={
                                       groupIndex
                                     }
-                                    className="rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1 font-mono text-[10px] text-[var(--muted)]"
+                                    className="max-w-full break-all rounded-md border border-[var(--border)] bg-[var(--background)] px-2 py-1 font-mono text-[10px] text-[var(--muted)]"
                                   >
                                     ${groupIndex + 1}:
                                     {" "}

@@ -15,10 +15,16 @@ function JsonEditor({
   readOnly = false,
   minHeight = "320px",
 }: JsonEditorProps) {
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const lineNumbersRef = useRef<HTMLDivElement>(null);
+  const textareaRef =
+    useRef<HTMLTextAreaElement>(null);
 
-  const lineCount = Math.max(1, value.split("\n").length);
+  const lineNumbersRef =
+    useRef<HTMLDivElement>(null);
+
+  const lineCount = Math.max(
+    1,
+    value.split("\n").length,
+  );
 
   const lines = Array.from(
     { length: lineCount },
@@ -26,65 +32,99 @@ function JsonEditor({
   );
 
   /*
-   * Keep line numbers vertically synchronized
-   * with the textarea when scrolling.
+   * ---------------------------------------------------------
+   * Sync line numbers with editor scroll
+   * ---------------------------------------------------------
    */
+
   useEffect(() => {
     const textarea = textareaRef.current;
     const lineNumbers = lineNumbersRef.current;
 
-    if (!textarea || !lineNumbers) return;
+    if (!textarea || !lineNumbers) {
+      return;
+    }
 
     const handleScroll = () => {
-      lineNumbers.scrollTop = textarea.scrollTop;
+      lineNumbers.style.transform = `translateY(-${textarea.scrollTop}px)`;
     };
 
-    textarea.addEventListener("scroll", handleScroll);
+    textarea.addEventListener(
+      "scroll",
+      handleScroll,
+      { passive: true },
+    );
 
     return () => {
-      textarea.removeEventListener("scroll", handleScroll);
+      textarea.removeEventListener(
+        "scroll",
+        handleScroll,
+      );
     };
   }, []);
 
   return (
     <div
       className="flex overflow-hidden bg-[var(--background)]"
-      style={{ minHeight }}
+      style={{
+        minHeight,
+      }}
     >
-      {/* Line numbers */}
+      {/* =================================================
+          LINE NUMBERS
+      ================================================= */}
+
       <div
-        ref={lineNumbersRef}
         aria-hidden="true"
-        className="w-12 shrink-0 overflow-hidden border-r border-[var(--border)] bg-[var(--surface-elevated)] py-5 text-right font-mono text-xs leading-7 text-[var(--subtle)]"
+        className="relative w-12 shrink-0 overflow-hidden border-r border-[var(--border)] bg-[var(--surface-elevated)]"
       >
-        <div>
+        <div
+          ref={lineNumbersRef}
+          className="absolute left-0 right-0 top-0 py-5 font-mono text-xs leading-7 text-[var(--subtle)]"
+        >
           {lines.map((line) => (
-            <div key={line} className="px-3">
+            <div
+              key={line}
+              className="px-3 text-right"
+            >
               {line}
             </div>
           ))}
         </div>
       </div>
 
-      {/* Editor */}
+      {/* =================================================
+          EDITOR
+      ================================================= */}
+
       <textarea
         ref={textareaRef}
         value={value}
-        onChange={(event) => onChange?.(event.target.value)}
+        onChange={(event) =>
+          onChange?.(event.target.value)
+        }
         placeholder={placeholder}
         readOnly={readOnly}
         spellCheck={false}
         wrap="off"
         className={[
-          "min-h-full w-full flex-1 resize-y",
-          "overflow-auto bg-transparent",
+          "block w-full flex-1",
+          "resize-y",
+          "overflow-auto",
+          "bg-transparent",
           "px-4 py-5",
           "font-mono text-sm leading-7",
           "text-[var(--foreground)]",
           "outline-none",
           "placeholder:text-[var(--subtle)]",
-          readOnly ? "cursor-default" : "",
+          "selection:bg-[var(--accent)]/20",
+          readOnly
+            ? "cursor-default"
+            : "cursor-text",
         ].join(" ")}
+        style={{
+          minHeight,
+        }}
       />
     </div>
   );

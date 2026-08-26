@@ -8,14 +8,14 @@ import {
   Trash2,
 } from "lucide-react";
 import { useMemo, useState } from "react";
-import {
-  generateUuids,
-} from "../../lib/uuid";
+
+import { generateUuids } from "../../lib/uuid";
+import { trackToolUsed } from "../../lib/analytics";
+
 import ToolPrivacyNotice from "./shared/ToolPrivacyNotice";
 import ToolError from "./shared/ToolError";
 import ToolEmptyState from "./shared/ToolEmptyState";
 import ToolActionButton from "./shared/ToolActionButton";
-import { trackToolUsed } from "../../lib/analytics";
 
 const QUANTITY_OPTIONS = [
   1,
@@ -26,11 +26,9 @@ const QUANTITY_OPTIONS = [
 ];
 
 function UuidGenerator() {
-  const [quantity, setQuantity] =
-    useState(5);
+  const [quantity, setQuantity] = useState(5);
 
-  const [uuids, setUuids] =
-    useState<string[]>([]);
+  const [uuids, setUuids] = useState<string[]>([]);
 
   const [copiedIndex, setCopiedIndex] =
     useState<number | null>(null);
@@ -38,8 +36,7 @@ function UuidGenerator() {
   const [copiedAll, setCopiedAll] =
     useState(false);
 
-  const [error, setError] =
-    useState("");
+  const [error, setError] = useState("");
 
   /*
    * ---------------------------------------------------------
@@ -49,8 +46,7 @@ function UuidGenerator() {
 
   const handleGenerate = () => {
     try {
-      const generated =
-        generateUuids(quantity);
+      const generated = generateUuids(quantity);
 
       setUuids(generated);
       setError("");
@@ -89,9 +85,7 @@ function UuidGenerator() {
         setCopiedIndex(null);
       }, 1500);
     } catch {
-      setError(
-        "Unable to copy UUID.",
-      );
+      setError("Unable to copy UUID.");
     }
   };
 
@@ -120,9 +114,7 @@ function UuidGenerator() {
         setCopiedAll(false);
       }, 1500);
     } catch {
-      setError(
-        "Unable to copy UUIDs.",
-      );
+      setError("Unable to copy UUIDs.");
     }
   };
 
@@ -135,18 +127,13 @@ function UuidGenerator() {
   const handleDownload = () => {
     if (!allUuids) return;
 
-    const blob = new Blob(
-      [allUuids],
-      {
-        type: "text/plain",
-      },
-    );
+    const blob = new Blob([allUuids], {
+      type: "text/plain",
+    });
 
-    const url =
-      URL.createObjectURL(blob);
+    const url = URL.createObjectURL(blob);
 
-    const link =
-      document.createElement("a");
+    const link = document.createElement("a");
 
     link.href = url;
     link.download = "uuids.txt";
@@ -191,30 +178,28 @@ function UuidGenerator() {
             </span>
 
             <div className="flex flex-wrap gap-1.5">
-              {QUANTITY_OPTIONS.map(
-                (option) => {
-                  const selected =
-                    quantity === option;
+              {QUANTITY_OPTIONS.map((option) => {
+                const selected =
+                  quantity === option;
 
-                  return (
-                    <button
-                      key={option}
-                      type="button"
-                      onClick={() =>
-                        setQuantity(option)
-                      }
-                      className={[
-                        "min-w-10 rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
-                        selected
-                          ? "border-[var(--accent)] bg-[var(--accent)] text-white"
-                          : "border-[var(--border)] bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)]",
-                      ].join(" ")}
-                    >
-                      {option}
-                    </button>
-                  );
-                },
-              )}
+                return (
+                  <button
+                    key={option}
+                    type="button"
+                    onClick={() =>
+                      setQuantity(option)
+                    }
+                    className={[
+                      "min-w-10 rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
+                      selected
+                        ? "border-[var(--accent)] bg-[var(--accent)] text-white"
+                        : "border-[var(--border)] bg-[var(--background)] text-[var(--muted)] hover:text-[var(--foreground)]",
+                    ].join(" ")}
+                  >
+                    {option}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -237,13 +222,16 @@ function UuidGenerator() {
           </div>
 
           {/* Generate */}
-          <ToolActionButton
-            variant="primary"
-            icon={RefreshCw}
-            onClick={handleGenerate}
-          >
-            Generate UUIDs
-          </ToolActionButton>
+          <div className="w-full sm:w-auto">
+            <ToolActionButton
+              variant="primary"
+              icon={RefreshCw}
+              onClick={handleGenerate}
+              className="w-full sm:w-auto"
+            >
+              Generate UUIDs
+            </ToolActionButton>
+          </div>
         </div>
       </div>
 
@@ -269,7 +257,7 @@ function UuidGenerator() {
           </div>
 
           {uuids.length > 0 && (
-            <div className="flex items-center gap-1">
+            <div className="flex flex-wrap items-center gap-1">
               <button
                 type="button"
                 onClick={handleCopyAll}
@@ -323,9 +311,9 @@ function UuidGenerator() {
             {uuids.map((uuid, index) => (
               <div
                 key={uuid}
-                className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/[0.02]"
+                className="group flex min-w-0 items-center gap-2 px-3 py-3 transition-colors hover:bg-white/[0.02] sm:gap-3 sm:px-4"
               >
-                <span className="w-6 shrink-0 text-right font-mono text-[10px] text-[var(--subtle)]">
+                <span className="w-5 shrink-0 text-right font-mono text-[10px] text-[var(--subtle)] sm:w-6">
                   {index + 1}
                 </span>
 

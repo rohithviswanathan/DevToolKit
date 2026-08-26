@@ -14,11 +14,12 @@ import {
   encodeBase64,
 } from "../../lib/base64";
 
+import { trackToolUsed } from "../../lib/analytics";
+
 import ToolPrivacyNotice from "./shared/ToolPrivacyNotice";
 import ToolError from "./shared/ToolError";
 import ToolEmptyState from "./shared/ToolEmptyState";
 import ToolActionButton from "./shared/ToolActionButton";
-import { trackToolUsed } from "../../lib/analytics";
 
 type Mode = "encode" | "decode";
 
@@ -140,6 +141,11 @@ function Base64Tool() {
     setOutput("");
     setError("");
     setCopied(false);
+
+    trackToolUsed(
+      "base64",
+      "sample",
+    );
   };
 
   /*
@@ -153,6 +159,11 @@ function Base64Tool() {
     setOutput("");
     setError("");
     setCopied(false);
+
+    trackToolUsed(
+      "base64",
+      "clear",
+    );
   };
 
   /*
@@ -170,6 +181,11 @@ function Base64Tool() {
       );
 
       setCopied(true);
+
+      trackToolUsed(
+        "base64",
+        "copy",
+      );
 
       window.setTimeout(() => {
         setCopied(false);
@@ -204,6 +220,7 @@ function Base64Tool() {
       document.createElement("a");
 
     link.href = url;
+
     link.download =
       mode === "encode"
         ? "encoded-base64.txt"
@@ -216,6 +233,11 @@ function Base64Tool() {
     document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
+
+    trackToolUsed(
+      "base64",
+      "download",
+    );
   };
 
   /*
@@ -239,7 +261,7 @@ function Base64Tool() {
   }, [output]);
 
   return (
-    <div className="space-y-4">
+    <div className="min-w-0 space-y-4">
       {/* Privacy */}
       <ToolPrivacyNotice>
         Your data stays in your browser. Nothing is
@@ -248,8 +270,8 @@ function Base64Tool() {
 
       {/* Mode switcher */}
       <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
+        <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <span className="block text-xs font-medium text-[var(--muted)]">
               Operation
             </span>
@@ -259,7 +281,7 @@ function Base64Tool() {
             </p>
           </div>
 
-          <div className="flex rounded-lg border border-[var(--border)] bg-[var(--background)] p-1">
+          <div className="flex shrink-0 self-start rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 sm:self-auto">
             <button
               type="button"
               onClick={() => {
@@ -302,24 +324,24 @@ function Base64Tool() {
       </div>
 
       {/* Editors */}
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid min-w-0 gap-4 lg:grid-cols-2">
         {/* Input */}
-        <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-          <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-            <div className="flex items-center gap-2">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+          <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
+            <div className="flex min-w-0 items-center gap-2">
               {mode === "encode" ? (
                 <FileText
                   size={16}
-                  className="text-[var(--accent)]"
+                  className="shrink-0 text-[var(--accent)]"
                 />
               ) : (
                 <Code2
                   size={16}
-                  className="text-[var(--accent)]"
+                  className="shrink-0 text-[var(--accent)]"
                 />
               )}
 
-              <span className="text-sm font-medium">
+              <span className="truncate text-sm font-medium">
                 {inputLabel}
               </span>
             </div>
@@ -327,7 +349,7 @@ function Base64Tool() {
             <button
               type="button"
               onClick={loadSample}
-              className="rounded-lg px-2.5 py-1.5 text-xs text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
+              className="shrink-0 rounded-lg px-2.5 py-1.5 text-xs text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
             >
               Sample
             </button>
@@ -347,10 +369,10 @@ function Base64Tool() {
                 : "Paste Base64 to decode..."
             }
             spellCheck={false}
-            className="min-h-[320px] w-full resize-y bg-transparent p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none placeholder:text-[var(--subtle)]"
+            className="min-h-[240px] w-full resize-y bg-transparent p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none placeholder:text-[var(--subtle)] sm:min-h-[320px]"
           />
 
-          <div className="flex justify-between border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
+          <div className="flex items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
             <span>
               {input.length.toLocaleString()} characters
             </span>
@@ -362,27 +384,27 @@ function Base64Tool() {
         </div>
 
         {/* Output */}
-        <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
-          <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-            <div className="flex items-center gap-2">
+        <div className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+          <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
+            <div className="flex min-w-0 items-center gap-2">
               {output ? (
                 <Check
                   size={16}
-                  className="text-[var(--success)]"
+                  className="shrink-0 text-[var(--success)]"
                 />
               ) : (
                 <Code2
                   size={16}
-                  className="text-[var(--subtle)]"
+                  className="shrink-0 text-[var(--subtle)]"
                 />
               )}
 
-              <span className="text-sm font-medium">
+              <span className="truncate text-sm font-medium">
                 {outputLabel}
               </span>
             </div>
 
-            <div className="flex items-center gap-1">
+            <div className="flex shrink-0 items-center gap-1">
               <button
                 type="button"
                 onClick={copyOutput}
@@ -421,6 +443,7 @@ function Base64Tool() {
                   ? "Enter some text and click Encode to generate Base64."
                   : "Enter Base64 and click Decode to see the original text."
               }
+              minHeight="min-h-[240px] sm:min-h-[320px]"
             />
           )}
 
@@ -430,10 +453,10 @@ function Base64Tool() {
                 value={output}
                 readOnly
                 spellCheck={false}
-                className="min-h-[320px] w-full resize-y bg-transparent p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none"
+                className="min-h-[240px] w-full resize-y break-all bg-transparent p-4 font-mono text-sm leading-6 text-[var(--foreground)] outline-none sm:min-h-[320px]"
               />
 
-              <div className="flex justify-between border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
+              <div className="flex items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
                 <span>
                   {output.length.toLocaleString()} characters
                 </span>

@@ -17,8 +17,14 @@ import {
   useRef,
   useState,
 } from "react";
+
 import JsonEditor from "./JsonEditor";
+
 import { trackToolUsed } from "../../lib/analytics";
+
+import ToolPrivacyNotice from "./shared/ToolPrivacyNotice";
+import ToolError from "./shared/ToolError";
+import ToolActionButton from "./shared/ToolActionButton";
 
 const SAMPLE_JSON = `{
   "name": "John Doe",
@@ -80,12 +86,30 @@ function JsonFormatter() {
    * ---------------------------------------------------------
    */
 
-  const extractErrorPosition = (message: string) => {
-    const match = message.match(/position\s+(\d+)/i);
+  const extractErrorPosition = (
+    message: string,
+  ) => {
+    const match = message.match(
+      /position\s+(\d+)/i,
+    );
 
     if (!match) return null;
 
     return Number(match[1]);
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * Reset result state
+   * ---------------------------------------------------------
+   */
+
+  const resetResult = () => {
+    setOutput("");
+    setError("");
+    setErrorPosition(null);
+    setIsValid(null);
+    setCopied(false);
   };
 
   /*
@@ -117,7 +141,12 @@ function JsonFormatter() {
       setError("");
       setErrorPosition(null);
       setIsValid(true);
-      trackToolUsed("json-formatter", "format");
+      setCopied(false);
+
+      trackToolUsed(
+        "json-formatter",
+        "format",
+      );
     } catch (err) {
       const message =
         err instanceof Error
@@ -130,6 +159,7 @@ function JsonFormatter() {
         extractErrorPosition(message),
       );
       setIsValid(false);
+      setCopied(false);
     }
   }, [input]);
 
@@ -158,8 +188,12 @@ function JsonFormatter() {
       setError("");
       setErrorPosition(null);
       setIsValid(true);
-      trackToolUsed("json-formatter", "minify");
-      
+      setCopied(false);
+
+      trackToolUsed(
+        "json-formatter",
+        "minify",
+      );
     } catch (err) {
       const message =
         err instanceof Error
@@ -172,6 +206,7 @@ function JsonFormatter() {
         extractErrorPosition(message),
       );
       setIsValid(false);
+      setCopied(false);
     }
   }, [input]);
 
@@ -183,7 +218,9 @@ function JsonFormatter() {
 
   const validateJson = useCallback(() => {
     if (!input.trim()) {
-      setError("Enter some JSON to validate.");
+      setError(
+        "Enter some JSON to validate.",
+      );
       setErrorPosition(null);
       setIsValid(false);
 
@@ -196,7 +233,11 @@ function JsonFormatter() {
       setError("");
       setErrorPosition(null);
       setIsValid(true);
-      trackToolUsed("json-formatter", "validate");
+
+      trackToolUsed(
+        "json-formatter",
+        "validate",
+      );
     } catch (err) {
       const message =
         err instanceof Error
@@ -224,6 +265,11 @@ function JsonFormatter() {
     setErrorPosition(null);
     setIsValid(null);
     setCopied(false);
+
+    trackToolUsed(
+      "json-formatter",
+      "clear",
+    );
   };
 
   /*
@@ -234,11 +280,12 @@ function JsonFormatter() {
 
   const loadSample = () => {
     setInput(SAMPLE_JSON);
-    setOutput("");
-    setError("");
-    setErrorPosition(null);
-    setIsValid(null);
-    setCopied(false);
+    resetResult();
+
+    trackToolUsed(
+      "json-formatter",
+      "sample",
+    );
   };
 
   /*
@@ -251,9 +298,16 @@ function JsonFormatter() {
     if (!output) return;
 
     try {
-      await navigator.clipboard.writeText(output);
+      await navigator.clipboard.writeText(
+        output,
+      );
 
       setCopied(true);
+
+      trackToolUsed(
+        "json-formatter",
+        "copy",
+      );
 
       window.setTimeout(() => {
         setCopied(false);
@@ -274,13 +328,18 @@ function JsonFormatter() {
   const downloadJson = () => {
     if (!output) return;
 
-    const blob = new Blob([output], {
-      type: "application/json",
-    });
+    const blob = new Blob(
+      [output],
+      {
+        type: "application/json",
+      },
+    );
 
-    const url = URL.createObjectURL(blob);
+    const url =
+      URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
+    const link =
+      document.createElement("a");
 
     link.href = url;
     link.download = "formatted.json";
@@ -292,6 +351,11 @@ function JsonFormatter() {
     document.body.removeChild(link);
 
     URL.revokeObjectURL(url);
+
+    trackToolUsed(
+      "json-formatter",
+      "download",
+    );
   };
 
   /*
@@ -301,8 +365,15 @@ function JsonFormatter() {
    */
 
   const processFile = (file: File) => {
-    if (!file.name.toLowerCase().endsWith(".json")) {
-      setError("Please select a .json file.");
+    if (
+      !file.name
+        .toLowerCase()
+        .endsWith(".json")
+    ) {
+      setError(
+        "Please select a .json file.",
+      );
+      setErrorPosition(null);
       setIsValid(false);
 
       return;
@@ -311,10 +382,15 @@ function JsonFormatter() {
     const reader = new FileReader();
 
     reader.onload = () => {
-      const contents = reader.result;
+      const contents =
+        reader.result;
 
-      if (typeof contents !== "string") {
-        setError("Unable to read the selected file.");
+      if (
+        typeof contents !== "string"
+      ) {
+        setError(
+          "Unable to read the selected file.",
+        );
         setIsValid(false);
 
         return;
@@ -326,10 +402,18 @@ function JsonFormatter() {
       setErrorPosition(null);
       setIsValid(null);
       setCopied(false);
+
+      trackToolUsed(
+        "json-formatter",
+        "upload",
+      );
     };
 
     reader.onerror = () => {
-      setError("Unable to read the selected file.");
+      setError(
+        "Unable to read the selected file.",
+      );
+      setErrorPosition(null);
       setIsValid(false);
     };
 
@@ -339,7 +423,8 @@ function JsonFormatter() {
   const handleFileChange = (
     event: React.ChangeEvent<HTMLInputElement>,
   ) => {
-    const file = event.target.files?.[0];
+    const file =
+      event.target.files?.[0];
 
     if (file) {
       processFile(file);
@@ -358,6 +443,7 @@ function JsonFormatter() {
     event: React.DragEvent<HTMLDivElement>,
   ) => {
     event.preventDefault();
+    event.stopPropagation();
 
     setIsDragging(true);
   };
@@ -366,6 +452,7 @@ function JsonFormatter() {
     event: React.DragEvent<HTMLDivElement>,
   ) => {
     event.preventDefault();
+    event.stopPropagation();
 
     setIsDragging(false);
   };
@@ -374,10 +461,12 @@ function JsonFormatter() {
     event: React.DragEvent<HTMLDivElement>,
   ) => {
     event.preventDefault();
+    event.stopPropagation();
 
     setIsDragging(false);
 
-    const file = event.dataTransfer.files?.[0];
+    const file =
+      event.dataTransfer.files?.[0];
 
     if (file) {
       processFile(file);
@@ -391,11 +480,17 @@ function JsonFormatter() {
    */
 
   useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
+    const handleKeyDown = (
+      event: KeyboardEvent,
+    ) => {
       const modifier =
-        event.ctrlKey || event.metaKey;
+        event.ctrlKey ||
+        event.metaKey;
 
-      if (modifier && event.key === "Enter") {
+      if (
+        modifier &&
+        event.key === "Enter"
+      ) {
         event.preventDefault();
 
         formatJson();
@@ -421,7 +516,9 @@ function JsonFormatter() {
    * ---------------------------------------------------------
    */
 
-  const handleInputChange = (value: string) => {
+  const handleInputChange = (
+    value: string,
+  ) => {
     setInput(value);
 
     setOutput("");
@@ -433,24 +530,27 @@ function JsonFormatter() {
 
   return (
     <div className="space-y-4">
-      {/* Privacy */}
-      <div className="flex items-center gap-2 rounded-xl border border-[var(--success)]/15 bg-[var(--success)]/5 px-4 py-3 text-xs text-[var(--muted)]">
-        <span className="size-1.5 shrink-0 rounded-full bg-[var(--success)]" />
+      {/* =====================================================
+          PRIVACY
+      ===================================================== */}
 
-        <span>
-          Your JSON stays in your browser. Nothing is
-          uploaded.
-        </span>
-      </div>
+      <ToolPrivacyNotice>
+        Your JSON stays in your browser. Nothing is
+        uploaded or sent to a server.
+      </ToolPrivacyNotice>
 
-      {/* Workspace */}
+      {/* =====================================================
+          WORKSPACE
+      ===================================================== */}
+
       <div className="grid gap-4 lg:grid-cols-2">
-        {/* =================================================
+        {/* ===================================================
             INPUT
-        ================================================= */}
-        <div
+        =================================================== */}
+
+        <section
           className={[
-            "overflow-hidden rounded-2xl border bg-[var(--surface)]",
+            "overflow-hidden rounded-2xl border bg-[var(--surface)] transition-colors",
             isDragging
               ? "border-[var(--accent)]"
               : "border-[var(--border)]",
@@ -460,14 +560,15 @@ function JsonFormatter() {
           onDrop={handleDrop}
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
+
+          <div className="flex flex-col gap-3 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-2">
               <FileJson
                 size={16}
-                className="text-[var(--accent)]"
+                className="shrink-0 text-[var(--accent)]"
               />
 
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium text-[var(--foreground)]">
                 Input
               </span>
             </div>
@@ -504,6 +605,7 @@ function JsonFormatter() {
           </div>
 
           {/* Editor */}
+
           <div className="relative">
             <JsonEditor
               value={input}
@@ -512,14 +614,16 @@ function JsonFormatter() {
             />
 
             {isDragging && (
-              <div className="absolute inset-0 flex items-center justify-center bg-[var(--background)]/90 backdrop-blur-sm">
-                <div className="text-center">
-                  <Upload
-                    size={28}
-                    className="mx-auto text-[var(--accent)]"
-                  />
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-[var(--background)]/90 px-6 text-center backdrop-blur-sm">
+                <div>
+                  <div className="mx-auto flex size-12 items-center justify-center rounded-xl border border-[var(--accent)]/30 bg-[var(--accent)]/10">
+                    <Upload
+                      size={24}
+                      className="text-[var(--accent)]"
+                    />
+                  </div>
 
-                  <p className="mt-3 text-sm font-medium">
+                  <p className="mt-3 text-sm font-medium text-[var(--foreground)]">
                     Drop your JSON file here
                   </p>
 
@@ -532,42 +636,47 @@ function JsonFormatter() {
           </div>
 
           {/* Footer */}
+
           <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
             <span>
-              {inputCharacters.toLocaleString()} characters
+              {inputCharacters.toLocaleString()}{" "}
+              characters
             </span>
 
             <span>
-              {inputLines.toLocaleString()} lines
+              {inputLines.toLocaleString()}{" "}
+              lines
             </span>
           </div>
-        </div>
+        </section>
 
-        {/* =================================================
+        {/* ===================================================
             OUTPUT
-        ================================================= */}
-        <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+        =================================================== */}
+
+        <section className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-[var(--border)] px-4 py-3">
-            <div className="flex items-center gap-2">
+
+          <div className="flex flex-col gap-3 border-b border-[var(--border)] px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex min-w-0 items-center gap-2">
               {isValid === true ? (
                 <Check
                   size={16}
-                  className="text-[var(--success)]"
+                  className="shrink-0 text-[var(--success)]"
                 />
               ) : isValid === false ? (
                 <X
                   size={16}
-                  className="text-[var(--error)]"
+                  className="shrink-0 text-[var(--error)]"
                 />
               ) : (
                 <FileJson
                   size={16}
-                  className="text-[var(--subtle)]"
+                  className="shrink-0 text-[var(--subtle)]"
                 />
               )}
 
-              <span className="text-sm font-medium">
+              <span className="text-sm font-medium text-[var(--foreground)]">
                 Output
               </span>
 
@@ -610,7 +719,8 @@ function JsonFormatter() {
             </div>
           </div>
 
-          {/* Editor */}
+          {/* Output editor */}
+
           <JsonEditor
             value={output}
             readOnly
@@ -618,98 +728,86 @@ function JsonFormatter() {
           />
 
           {/* Footer */}
+
           <div className="flex items-center justify-between border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
             <span>
-              {outputCharacters.toLocaleString()} characters
+              {outputCharacters.toLocaleString()}{" "}
+              characters
             </span>
 
             <span>
-              {outputLines.toLocaleString()} lines
+              {outputLines.toLocaleString()}{" "}
+              lines
             </span>
           </div>
-        </div>
+        </section>
       </div>
 
-      {/* =================================================
+      {/* =====================================================
           ERROR
-      ================================================= */}
+      ===================================================== */}
+
       {error && (
-        <div className="flex items-start gap-3 rounded-xl border border-[var(--error)]/20 bg-[var(--error)]/5 px-4 py-3">
-          <X
-            size={16}
-            className="mt-0.5 shrink-0 text-[var(--error)]"
-          />
-
-          <div className="min-w-0">
-            <p className="text-sm font-medium text-[var(--error)]">
-              Invalid JSON
-            </p>
-
-            <p className="mt-1 break-words text-xs leading-5 text-[var(--muted)]">
-              {error}
-            </p>
-
-            {errorPosition !== null && (
-              <p className="mt-1 text-xs text-[var(--subtle)]">
-                Error near character{" "}
-                {errorPosition.toLocaleString()}.
-              </p>
-            )}
-          </div>
-        </div>
+        <ToolError
+          title={
+            isValid === false
+              ? "Invalid JSON"
+              : "Something went wrong"
+          }
+          message={
+            errorPosition !== null
+              ? `${error} Error near character ${errorPosition.toLocaleString()}.`
+              : error
+          }
+        />
       )}
 
-      {/* =================================================
+      {/* =====================================================
           ACTIONS
-      ================================================= */}
-      <div className="flex flex-wrap items-center gap-2">
-        {/* Format */}
-        <button
-          type="button"
-          onClick={formatJson}
-          className="inline-flex items-center gap-2 rounded-lg bg-[var(--accent)] px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[var(--accent-hover)]"
-        >
-          <Code2 size={16} />
+      ===================================================== */}
 
-          <span>Format</span>
+      <div className="flex flex-wrap items-center gap-2">
+        <ToolActionButton
+          variant="primary"
+          icon={Code2}
+          onClick={formatJson}
+        >
+          Format
 
           <kbd className="hidden rounded border border-white/20 bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-white/80 sm:inline">
             Ctrl ↵
           </kbd>
-        </button>
+        </ToolActionButton>
 
-        {/* Minify */}
-        <button
-          type="button"
+        <ToolActionButton
+          variant="secondary"
+          icon={Minimize2}
           onClick={minifyJson}
-          className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-elevated)]"
         >
-          <Minimize2 size={16} />
           Minify
-        </button>
+        </ToolActionButton>
 
-        {/* Validate */}
-        <button
-          type="button"
+        <ToolActionButton
+          variant="secondary"
+          icon={Check}
           onClick={validateJson}
-          className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-4 py-2.5 text-sm font-medium text-[var(--foreground)] transition-colors hover:bg-[var(--surface-elevated)]"
         >
-          <Check size={16} />
           Validate
-        </button>
+        </ToolActionButton>
 
-        {/* Clear */}
-        <button
-          type="button"
+        <ToolActionButton
+          variant="ghost"
+          icon={Trash2}
           onClick={clearAll}
-          className="inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-4 py-2.5 text-sm text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
         >
-          <Trash2 size={15} />
           Clear
-        </button>
+        </ToolActionButton>
       </div>
 
-      {/* Bottom info */}
+      {/* =====================================================
+          BOTTOM INFO
+      ===================================================== */}
+
       <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-4 text-xs text-[var(--subtle)] sm:flex-row sm:items-center sm:justify-between">
         <span>
           Tip: Press{" "}
@@ -724,7 +822,7 @@ function JsonFormatter() {
         </span>
 
         <span>
-          Runs entirely in your browser.
+          Processing happens entirely in your browser.
         </span>
       </div>
     </div>
