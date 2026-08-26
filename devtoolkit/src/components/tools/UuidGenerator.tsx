@@ -15,6 +15,7 @@ import ToolPrivacyNotice from "./shared/ToolPrivacyNotice";
 import ToolError from "./shared/ToolError";
 import ToolEmptyState from "./shared/ToolEmptyState";
 import ToolActionButton from "./shared/ToolActionButton";
+import { trackToolUsed } from "../../lib/analytics";
 
 const QUANTITY_OPTIONS = [
   1,
@@ -55,6 +56,11 @@ function UuidGenerator() {
       setError("");
       setCopiedIndex(null);
       setCopiedAll(false);
+
+      trackToolUsed(
+        "uuid-generator",
+        "generate",
+      );
     } catch (err) {
       setError(
         err instanceof Error
