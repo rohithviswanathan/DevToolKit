@@ -15,6 +15,7 @@ import { jsonToTypeScript } from "../../lib/jsonToTypescript"
 import ToolPrivacyNotice from "./shared/ToolPrivacyNotice";
 import ToolError from "./shared/ToolError";
 import ToolActionButton from "./shared/ToolActionButton";
+import { trackToolUsed } from "../../lib/analytics";
 
 const SAMPLE_JSON = `{
   "id": 123,
@@ -76,6 +77,11 @@ function JsonToTypeScript() {
       setOutput(result);
       setError("");
       setCopied(false);
+
+      trackToolUsed(
+        "json-to-typescript",
+        "generate",
+      );
     } catch (err) {
       setOutput("");
 

@@ -18,6 +18,7 @@ import ToolPrivacyNotice from "./shared/ToolPrivacyNotice";
 import ToolError from "./shared/ToolError";
 import ToolEmptyState from "./shared/ToolEmptyState";
 import ToolActionButton from "./shared/ToolActionButton";
+import { trackToolUsed } from "../../lib/analytics";
 
 type Mode = "encode" | "decode";
 
@@ -86,6 +87,13 @@ function Base64Tool() {
       setOutput(result);
       setError("");
       setCopied(false);
+
+      trackToolUsed(
+        "base64",
+        mode === "encode"
+          ? "encode"
+          : "decode",
+      );
     } catch (err) {
       setOutput("");
 

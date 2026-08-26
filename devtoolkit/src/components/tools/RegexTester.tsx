@@ -12,6 +12,7 @@ import {
 } from "react";
 
 import { testRegex } from "../../lib/regex";
+import { trackToolUsed } from "../../lib/analytics";
 
 import ToolPrivacyNotice from "./shared/ToolPrivacyNotice";
 import ToolError from "./shared/ToolError";
@@ -96,21 +97,35 @@ function RegexTester() {
   const toggleFlag = (flag: string) => {
     setFlags((current) => {
       if (current.includes(flag)) {
-        return current.replace(flag, "");
+        const nextFlags = current.replace(flag, "");
+
+        trackToolUsed(
+          "regex-tester",
+          `flag_removed_${flag}`,
+        );
+
+        return nextFlags;
       }
 
       /*
-       * Keep flags in the normal JavaScript order.
-       */
+      * Keep flags in the normal JavaScript order.
+      */
       const order = "dgimsuvy";
 
-      return [...new Set(`${current}${flag}`)]
+      const nextFlags = [...new Set(`${current}${flag}`)]
         .sort(
           (a, b) =>
             order.indexOf(a) -
             order.indexOf(b),
         )
         .join("");
+
+      trackToolUsed(
+        "regex-tester",
+        `flag_added_${flag}`,
+      );
+
+      return nextFlags;
     });
   };
 
@@ -125,6 +140,7 @@ function RegexTester() {
     setText(SAMPLE_TEXT);
     setFlags("gm");
     setCopied(false);
+    trackToolUsed("regex-tester", "sample");
   };
 
   /*
@@ -138,6 +154,11 @@ function RegexTester() {
     setText("");
     setFlags("g");
     setCopied(false);
+
+    trackToolUsed(
+      "regex-tester",
+      "clear",
+    );
   };
 
   /*
@@ -155,6 +176,11 @@ function RegexTester() {
       );
 
       setCopied(true);
+
+      trackToolUsed(
+        "regex-tester",
+        "copy",
+      );
 
       window.setTimeout(() => {
         setCopied(false);

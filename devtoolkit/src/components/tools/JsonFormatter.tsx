@@ -18,6 +18,7 @@ import {
   useState,
 } from "react";
 import JsonEditor from "./JsonEditor";
+import { trackToolUsed } from "../../lib/analytics";
 
 const SAMPLE_JSON = `{
   "name": "John Doe",
@@ -116,6 +117,7 @@ function JsonFormatter() {
       setError("");
       setErrorPosition(null);
       setIsValid(true);
+      trackToolUsed("json-formatter", "format");
     } catch (err) {
       const message =
         err instanceof Error
@@ -156,6 +158,8 @@ function JsonFormatter() {
       setError("");
       setErrorPosition(null);
       setIsValid(true);
+      trackToolUsed("json-formatter", "minify");
+      
     } catch (err) {
       const message =
         err instanceof Error
@@ -192,6 +196,7 @@ function JsonFormatter() {
       setError("");
       setErrorPosition(null);
       setIsValid(true);
+      trackToolUsed("json-formatter", "validate");
     } catch (err) {
       const message =
         err instanceof Error
