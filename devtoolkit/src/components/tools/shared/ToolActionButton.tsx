@@ -18,18 +18,51 @@ function ToolActionButton({
   className = "",
   ...props
 }: ToolActionButtonProps) {
-  const base =
-    "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-all duration-150 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--accent)]/50 focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--background)] active:scale-[0.98] disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-40";
+  const base = [
+    "inline-flex items-center justify-center gap-2",
+    "rounded-lg px-4 py-2.5",
+    "text-sm font-medium",
+    "transition-all duration-150 ease-out",
+    "focus-visible:outline-none",
+    "focus-visible:ring-2",
+    "focus-visible:ring-[var(--accent)]/50",
+    "focus-visible:ring-offset-2",
+    "focus-visible:ring-offset-[var(--background)]",
+    "active:scale-[0.98]",
+    "disabled:pointer-events-none",
+    "disabled:cursor-not-allowed",
+    "disabled:opacity-40",
+    "motion-reduce:transition-none",
+    "motion-reduce:transform-none",
+  ].join(" ");
 
   const variants = {
-    primary:
-      "bg-[var(--accent)] text-white shadow-sm hover:-translate-y-px hover:bg-[var(--accent-hover)] hover:shadow-md",
+    primary: [
+      "bg-[var(--accent)] text-white",
+      "shadow-sm",
+      "hover:-translate-y-px",
+      "hover:bg-[var(--accent-hover)]",
+      "hover:shadow-md",
+      "motion-reduce:hover:translate-y-0",
+    ].join(" "),
 
-    secondary:
-      "border border-[var(--border)] bg-[var(--surface)] text-[var(--muted)] hover:-translate-y-px hover:border-[var(--accent)]/40 hover:bg-white/[0.05] hover:text-[var(--foreground)] hover:shadow-sm",
+    secondary: [
+      "border border-[var(--border)]",
+      "bg-[var(--surface)]",
+      "text-[var(--muted)]",
+      "hover:-translate-y-px",
+      "hover:border-[var(--accent)]/40",
+      "hover:bg-white/[0.05]",
+      "hover:text-[var(--foreground)]",
+      "hover:shadow-sm",
+      "motion-reduce:hover:translate-y-0",
+    ].join(" "),
 
-    ghost:
-      "text-[var(--muted)] hover:bg-white/[0.05] hover:text-[var(--foreground)]",
+    ghost: [
+      "text-[var(--muted)]",
+      "hover:bg-white/[0.05]",
+      "hover:text-[var(--foreground)]",
+    ].join(" "),
   };
 
   return (
