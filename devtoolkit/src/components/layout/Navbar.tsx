@@ -7,6 +7,7 @@ import {
   Regex,
   Search,
   X,
+  KeyRound,
 } from "lucide-react";
 import {
   useEffect,
@@ -28,6 +29,7 @@ const toolIcons = {
   fingerprint: Fingerprint,
   binary: Binary,
   regex: Regex,
+  "key-round": KeyRound,
 };
 
 function Navbar() {
@@ -311,19 +313,6 @@ function Navbar() {
               </kbd>
             </button>
 
-            {/* GitHub */}
-            <a
-              href="https://github.com"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="GitHub"
-              className="ml-1"
-            >
-              <IconButton label="GitHub">
-                <Code2 size={17} />
-              </IconButton>
-            </a>
-
             <ThemeToggle />
           </nav>
 
@@ -364,14 +353,12 @@ function Navbar() {
 
         {mobileOpen && (
           <div className="border-t border-[var(--border)] bg-[var(--background)] md:hidden">
-            <nav className="mx-auto flex max-w-7xl flex-col gap-1 px-3 py-3 sm:px-6 sm:py-4">
+            <nav className="mx-auto flex max-w-2xl items-center gap-2 px-4 py-2 sm:px-6">
               {/* Tools */}
               <a
                 href="/#tools"
-                onClick={() =>
-                  setMobileOpen(false)
-                }
-                className="flex min-h-11 items-center rounded-lg px-3 py-2.5 text-sm text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
+                onClick={() => setMobileOpen(false)}
+                className="flex min-h-11 shrink-0 items-center justify-center rounded-lg px-3 py-2.5 text-sm text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
               >
                 Tools
               </a>
@@ -380,31 +367,15 @@ function Navbar() {
               <button
                 type="button"
                 onClick={openSearch}
-                className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
+                className="flex min-h-11 flex-1 items-center gap-3 rounded-lg px-4 py-2.5 text-left text-sm text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
               >
-                <Search size={17} />
+                <Search size={17} className="shrink-0" />
 
                 <span>Search tools</span>
               </button>
 
-              {/* GitHub */}
-              <a
-                href="https://github.com"
-                target="_blank"
-                rel="noreferrer"
-                className="flex min-h-11 items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-[var(--muted)] transition-colors hover:bg-white/[0.05] hover:text-[var(--foreground)]"
-              >
-                <Code2 size={17} />
-
-                <span>GitHub</span>
-              </a>
-
               {/* Theme */}
-              <div className="flex min-h-11 items-center justify-between rounded-lg px-3 py-2.5">
-                <span className="text-sm text-[var(--muted)]">
-                  Appearance
-                </span>
-
+              <div className="flex min-h-11 shrink-0 items-center justify-center rounded-lg px-2 py-2.5">
                 <ThemeToggle />
               </div>
             </nav>
