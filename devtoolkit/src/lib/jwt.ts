@@ -95,7 +95,7 @@ export function decodeJwt(
     !signature
   ) {
     throw new Error(
-      "Invalid JWT format. The header, payload, and signature must all be present.",
+      "Invalid JWT format. The header, payload, and signature must all be present.", 
     );
   }
 
