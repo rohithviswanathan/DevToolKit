@@ -17,6 +17,21 @@ export function decodeBase64(value: string): string {
     return "";
   }
 
+  /*
+   * Base64 must:
+   * - contain only A-Z, a-z, 0-9, +, /
+   * - optionally end with = or ==
+   * - have a valid length
+   */
+  if (
+    normalized.length % 4 !== 0 ||
+    !/^[A-Za-z0-9+/]*={0,2}$/.test(normalized)
+  ) {
+    throw new Error(
+      "Invalid Base64 input. Make sure the string contains valid Base64 data.",
+    );
+  }
+
   try {
     const binary = atob(normalized);
 
