@@ -1,4 +1,5 @@
 import { ArrowLeft, Wrench } from "lucide-react";
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 
 import { getToolById } from "../data/tools";
@@ -11,6 +12,50 @@ function ToolPage() {
   const tool = toolId
     ? getToolById(toolId)
     : undefined;
+
+  /*
+   * ---------------------------------------------------------
+   * Dynamic SEO metadata
+   * ---------------------------------------------------------
+   */
+
+  useEffect(() => {
+    if (!tool) {
+      document.title =
+        "Tool Not Found | DevToolkit";
+
+      return;
+    }
+
+    document.title = `${tool.name} | DevToolkit`;
+
+    const description =
+      tool.description;
+
+    let descriptionTag =
+      document.querySelector(
+        'meta[name="description"]',
+      );
+
+    if (!descriptionTag) {
+      descriptionTag =
+        document.createElement("meta");
+
+      descriptionTag.setAttribute(
+        "name",
+        "description",
+      );
+
+      document.head.appendChild(
+        descriptionTag,
+      );
+    }
+
+    descriptionTag.setAttribute(
+      "content",
+      description,
+    );
+  }, [tool]);
 
   /*
    * ---------------------------------------------------------

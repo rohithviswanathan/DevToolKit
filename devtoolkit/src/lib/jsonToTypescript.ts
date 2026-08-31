@@ -72,15 +72,6 @@ function isObject(
   );
 }
 
-function isPrimitive(
-  value: unknown,
-): boolean {
-  return (
-    value === null ||
-    typeof value !== "object"
-  );
-}
-
 /*
  * ---------------------------------------------------------
  * Primitive type
@@ -308,12 +299,6 @@ function getArrayType(
      */
     const mergedObject =
       mergeObjects(objectValues);
-
-    const presentKeys = new Set(
-      objectValues.flatMap((object) =>
-        Object.keys(object),
-      ),
-    );
 
     const allKeys = Object.keys(
       mergedObject,
