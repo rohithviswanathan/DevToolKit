@@ -7,7 +7,11 @@ import {
   FileText,
   Trash2,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   decodeBase64,
@@ -63,11 +67,23 @@ function Base64Tool() {
 
   /*
    * ---------------------------------------------------------
+   * Reset result
+   * ---------------------------------------------------------
+   */
+
+  const resetResult = () => {
+    setOutput("");
+    setError("");
+    setCopied(false);
+  };
+
+  /*
+   * ---------------------------------------------------------
    * Convert
    * ---------------------------------------------------------
    */
 
-  const convert = () => {
+  const convert = useCallback(() => {
     if (!input.trim()) {
       setOutput("");
       setError(
@@ -75,6 +91,7 @@ function Base64Tool() {
           ? "Enter some text to encode."
           : "Enter a Base64 string to decode.",
       );
+      setCopied(false);
 
       return;
     }
@@ -97,13 +114,30 @@ function Base64Tool() {
       );
     } catch (err) {
       setOutput("");
+      setCopied(false);
 
       setError(
         err instanceof Error
           ? err.message
-          : "Unable to process the input.",
+          : mode === "decode"
+            ? "The provided value is not valid Base64."
+            : "Unable to encode the input.",
       );
     }
+  }, [input, mode]);
+
+  /*
+   * ---------------------------------------------------------
+   * Mode change
+   * ---------------------------------------------------------
+   */
+
+  const changeMode = (nextMode: Mode) => {
+    if (nextMode === mode) return;
+
+    setMode(nextMode);
+    setInput("");
+    resetResult();
   };
 
   /*
@@ -113,16 +147,23 @@ function Base64Tool() {
    */
 
   const swap = () => {
-    setMode((currentMode) =>
-      currentMode === "encode"
-        ? "decode"
-        : "encode",
-    );
+    if (!output) return;
 
+    const nextMode: Mode =
+      mode === "encode"
+        ? "decode"
+        : "encode";
+
+    setMode(nextMode);
     setInput(output);
     setOutput("");
     setError("");
     setCopied(false);
+
+    trackToolUsed(
+      "base64",
+      "swap",
+    );
   };
 
   /*
@@ -132,15 +173,13 @@ function Base64Tool() {
    */
 
   const loadSample = () => {
-    if (mode === "encode") {
-      setInput(SAMPLE_TEXT);
-    } else {
-      setInput(SAMPLE_BASE64);
-    }
+    setInput(
+      mode === "encode"
+        ? SAMPLE_TEXT
+        : SAMPLE_BASE64,
+    );
 
-    setOutput("");
-    setError("");
-    setCopied(false);
+    resetResult();
 
     trackToolUsed(
       "base64",
@@ -192,7 +231,7 @@ function Base64Tool() {
       }, 1500);
     } catch {
       setError(
-        "Unable to copy the output.",
+        "Unable to copy the output. Please copy it manually.",
       );
     }
   };
@@ -206,38 +245,94 @@ function Base64Tool() {
   const downloadOutput = () => {
     if (!output) return;
 
-    const blob = new Blob(
-      [output],
-      {
-        type: "text/plain;charset=utf-8",
-      },
+    try {
+      const blob = new Blob(
+        [output],
+        {
+          type: "text/plain;charset=utf-8",
+        },
+      );
+
+      const url =
+        URL.createObjectURL(blob);
+
+      const link =
+        document.createElement("a");
+
+      link.href = url;
+
+      link.download =
+        mode === "encode"
+          ? "encoded-base64.txt"
+          : "decoded-text.txt";
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+
+      trackToolUsed(
+        "base64",
+        "download",
+      );
+    } catch {
+      setError(
+        "Unable to download the output.",
+      );
+    }
+  };
+
+  /*
+   * ---------------------------------------------------------
+   * Keyboard shortcut
+   * ---------------------------------------------------------
+   */
+
+  useEffect(() => {
+    const handleKeyDown = (
+      event: KeyboardEvent,
+    ) => {
+      const modifier =
+        event.ctrlKey ||
+        event.metaKey;
+
+      if (
+        modifier &&
+        event.key === "Enter"
+      ) {
+        event.preventDefault();
+
+        convert();
+      }
+    };
+
+    window.addEventListener(
+      "keydown",
+      handleKeyDown,
     );
 
-    const url =
-      URL.createObjectURL(blob);
+    return () => {
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown,
+      );
+    };
+  }, [convert]);
 
-    const link =
-      document.createElement("a");
+  /*
+   * ---------------------------------------------------------
+   * Input change
+   * ---------------------------------------------------------
+   */
 
-    link.href = url;
-
-    link.download =
-      mode === "encode"
-        ? "encoded-base64.txt"
-        : "decoded-text.txt";
-
-    document.body.appendChild(link);
-
-    link.click();
-
-    document.body.removeChild(link);
-
-    URL.revokeObjectURL(url);
-
-    trackToolUsed(
-      "base64",
-      "download",
-    );
+  const handleInputChange = (
+    value: string,
+  ) => {
+    setInput(value);
+    resetResult();
   };
 
   /*
@@ -246,30 +341,30 @@ function Base64Tool() {
    * ---------------------------------------------------------
    */
 
-  const inputBytes = useMemo(() => {
-    if (!input) return 0;
+  const inputBytes = input
+    ? new TextEncoder().encode(input).length
+    : 0;
 
-    return new TextEncoder()
-      .encode(input).length;
-  }, [input]);
-
-  const outputBytes = useMemo(() => {
-    if (!output) return 0;
-
-    return new TextEncoder()
-      .encode(output).length;
-  }, [output]);
+  const outputBytes = output
+    ? new TextEncoder().encode(output).length
+    : 0;
 
   return (
     <div className="min-w-0 space-y-4">
-      {/* Privacy */}
+      {/* =====================================================
+          PRIVACY
+      ===================================================== */}
+
       <ToolPrivacyNotice>
         Your data stays in your browser. Nothing is
         uploaded or sent to a server.
       </ToolPrivacyNotice>
 
-      {/* Mode switcher */}
-      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
+      {/* =====================================================
+          MODE SWITCHER
+      ===================================================== */}
+
+      <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4">
         <div className="flex min-w-0 flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="min-w-0">
             <span className="block text-xs font-medium text-[var(--muted)]">
@@ -284,13 +379,12 @@ function Base64Tool() {
           <div className="flex shrink-0 self-start rounded-lg border border-[var(--border)] bg-[var(--background)] p-1 sm:self-auto">
             <button
               type="button"
-              onClick={() => {
-                setMode("encode");
-                setInput("");
-                setOutput("");
-                setError("");
-                setCopied(false);
-              }}
+              onClick={() =>
+                changeMode("encode")
+              }
+              aria-pressed={
+                mode === "encode"
+              }
               className={[
                 "rounded-md px-4 py-2 text-xs font-medium transition-colors",
                 mode === "encode"
@@ -303,13 +397,12 @@ function Base64Tool() {
 
             <button
               type="button"
-              onClick={() => {
-                setMode("decode");
-                setInput("");
-                setOutput("");
-                setError("");
-                setCopied(false);
-              }}
+              onClick={() =>
+                changeMode("decode")
+              }
+              aria-pressed={
+                mode === "decode"
+              }
               className={[
                 "rounded-md px-4 py-2 text-xs font-medium transition-colors",
                 mode === "decode"
@@ -321,12 +414,18 @@ function Base64Tool() {
             </button>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* Editors */}
+      {/* =====================================================
+          EDITORS
+      ===================================================== */}
+
       <div className="grid min-w-0 gap-4 lg:grid-cols-2">
-        {/* Input */}
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+        {/* ===================================================
+            INPUT
+        =================================================== */}
+
+        <section className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
           <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
             <div className="flex min-w-0 items-center gap-2">
               {mode === "encode" ? (
@@ -341,7 +440,7 @@ function Base64Tool() {
                 />
               )}
 
-              <span className="truncate text-sm font-medium">
+              <span className="truncate text-sm font-medium text-[var(--foreground)]">
                 {inputLabel}
               </span>
             </div>
@@ -357,12 +456,11 @@ function Base64Tool() {
 
           <textarea
             value={input}
-            onChange={(event) => {
-              setInput(event.target.value);
-              setOutput("");
-              setError("");
-              setCopied(false);
-            }}
+            onChange={(event) =>
+              handleInputChange(
+                event.target.value,
+              )
+            }
             placeholder={
               mode === "encode"
                 ? "Enter text to encode..."
@@ -374,17 +472,22 @@ function Base64Tool() {
 
           <div className="flex items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
             <span>
-              {input.length.toLocaleString()} characters
+              {input.length.toLocaleString()}{" "}
+              characters
             </span>
 
             <span>
-              {inputBytes.toLocaleString()} bytes
+              {inputBytes.toLocaleString()}{" "}
+              bytes
             </span>
           </div>
-        </div>
+        </section>
 
-        {/* Output */}
-        <div className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
+        {/* ===================================================
+            OUTPUT
+        =================================================== */}
+
+        <section className="min-w-0 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)]">
           <div className="flex min-w-0 items-center justify-between gap-3 border-b border-[var(--border)] px-4 py-3">
             <div className="flex min-w-0 items-center gap-2">
               {output ? (
@@ -399,9 +502,15 @@ function Base64Tool() {
                 />
               )}
 
-              <span className="truncate text-sm font-medium">
+              <span className="truncate text-sm font-medium text-[var(--foreground)]">
                 {outputLabel}
               </span>
+
+              {output && (
+                <span className="hidden rounded-md bg-[var(--success)]/10 px-1.5 py-0.5 text-[10px] font-medium text-[var(--success)] sm:inline">
+                  Ready
+                </span>
+              )}
             </div>
 
             <div className="flex shrink-0 items-center gap-1">
@@ -458,19 +567,24 @@ function Base64Tool() {
 
               <div className="flex items-center justify-between gap-3 border-t border-[var(--border)] px-4 py-2.5 text-xs text-[var(--subtle)]">
                 <span>
-                  {output.length.toLocaleString()} characters
+                  {output.length.toLocaleString()}{" "}
+                  characters
                 </span>
 
                 <span>
-                  {outputBytes.toLocaleString()} bytes
+                  {outputBytes.toLocaleString()}{" "}
+                  bytes
                 </span>
               </div>
             </>
           )}
-        </div>
+        </section>
       </div>
 
-      {/* Error */}
+      {/* =====================================================
+          ERROR
+      ===================================================== */}
+
       {error && (
         <ToolError
           title={
@@ -482,7 +596,10 @@ function Base64Tool() {
         />
       )}
 
-      {/* Actions */}
+      {/* =====================================================
+          ACTIONS
+      ===================================================== */}
+
       <div className="flex flex-wrap items-center gap-2">
         <ToolActionButton
           variant="primary"
@@ -492,6 +609,10 @@ function Base64Tool() {
           {mode === "encode"
             ? "Encode"
             : "Decode"}
+
+          <kbd className="hidden rounded border border-white/20 bg-white/10 px-1.5 py-0.5 text-[10px] font-medium text-white/80 sm:inline">
+            Ctrl ↵
+          </kbd>
         </ToolActionButton>
 
         <ToolActionButton
@@ -512,7 +633,10 @@ function Base64Tool() {
         </ToolActionButton>
       </div>
 
-      {/* Bottom information */}
+      {/* =====================================================
+          BOTTOM INFORMATION
+      ===================================================== */}
+
       <div className="flex flex-col gap-2 border-t border-[var(--border)] pt-4 text-xs text-[var(--subtle)] sm:flex-row sm:items-center sm:justify-between">
         <span>
           Supports Unicode and UTF-8 text.
