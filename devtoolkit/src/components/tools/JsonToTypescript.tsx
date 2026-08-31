@@ -408,21 +408,16 @@ function JsonToTypeScript() {
 
             <button
               type="button"
-              onClick={
-                handleOptionalChange
-              }
-              aria-pressed={
-                optionalProperties
-              }
+              onClick={handleOptionalChange}
+              aria-pressed={optionalProperties}
               className="flex h-10 w-full items-center justify-between rounded-lg border border-[var(--border)] bg-[var(--background)] px-3 text-xs text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
             >
-              <span>
-                Optional properties
-              </span>
+              <span>Optional properties</span>
 
+              {/* Toggle */}
               <span
                 className={[
-                  "relative h-5 w-9 rounded-full transition-colors",
+                  "relative flex h-5 w-9 shrink-0 items-center rounded-full transition-colors duration-200",
                   optionalProperties
                     ? "bg-[var(--accent)]"
                     : "bg-[var(--surface-elevated)]",
@@ -430,10 +425,10 @@ function JsonToTypeScript() {
               >
                 <span
                   className={[
-                    "absolute top-0.5 size-4 rounded-full bg-white transition-transform",
+                    "absolute left-0.5 size-4 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out",
                     optionalProperties
                       ? "translate-x-4"
-                      : "translate-x-0.5",
+                      : "translate-x-0",
                   ].join(" ")}
                 />
               </span>
