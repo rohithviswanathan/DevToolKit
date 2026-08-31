@@ -1,7 +1,11 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+
 import Navbar from "./components/layout/Navbar";
+import Footer from "./components/layout/Footer";
+
 import Home from "./pages/Home";
 import ToolPage from "./pages/ToolPage";
+
 import PageViewTracker from "./components/analytics/PageViewTracker";
 
 function App() {
@@ -13,7 +17,10 @@ function App() {
         <Navbar />
 
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route
+            path="/"
+            element={<Home />}
+          />
 
           <Route
             path="/tools/:toolId"
@@ -25,6 +32,8 @@ function App() {
             element={<ToolPage />}
           />
         </Routes>
+
+        <Footer />
       </div>
     </BrowserRouter>
   );
