@@ -7,6 +7,7 @@ import Home from "./pages/Home";
 import ToolPage from "./pages/ToolPage";
 
 import PageViewTracker from "./components/analytics/PageViewTracker";
+import Privacy from "./pages/Privacy";
 
 function App() {
   return (
@@ -25,6 +26,11 @@ function App() {
           <Route
             path="/tools/:toolId"
             element={<ToolPage />}
+          />
+
+          <Route
+            path="/privacy"
+            element={<Privacy />}
           />
 
           <Route

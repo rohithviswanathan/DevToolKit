@@ -26,7 +26,7 @@ function Footer() {
               />
 
               <span>
-                Your data stays in your browser.
+                Tool data stays in your browser.
               </span>
             </div>
           </div>
@@ -64,6 +64,13 @@ function Footer() {
                 >
                   GitHub
                 </a>
+
+                <Link
+                  to="/privacy"
+                  className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+                >
+                  Privacy
+                </Link>
               </nav>
             </div>
           </div>
