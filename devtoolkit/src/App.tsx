@@ -9,6 +9,7 @@ import ToolPage from "./pages/ToolPage";
 import PageViewTracker from "./components/analytics/PageViewTracker";
 import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
+import NotFound from "./pages/NotFound";
 
 function App() {
   return (
@@ -41,7 +42,7 @@ function App() {
 
           <Route
             path="*"
-            element={<ToolPage />}
+            element={<NotFound />}
           />
         </Routes>
 
