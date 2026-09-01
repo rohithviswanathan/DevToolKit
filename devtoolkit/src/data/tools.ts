@@ -12,6 +12,12 @@ export const tools: Tool[] = [
     longDescription:
       "Format, validate, beautify and minify JSON directly in your browser. Quickly turn messy JSON into clean, readable data.",
 
+    seoTitle:
+      "JSON Formatter & Validator Online — Free | DevToolkit",
+
+    seoDescription:
+      "Format, validate, beautify and minify JSON online. Free browser-based JSON formatter and validator with no signup required.",
+
     category: "JSON",
 
     icon: "braces",
@@ -20,13 +26,14 @@ export const tools: Tool[] = [
 
     keywords: [
       "json",
-      "formatter",
-      "validator",
-      "validate",
-      "beautify",
-      "pretty print",
-      "minify",
+      "json formatter",
+      "json validator",
+      "json beautifier",
+      "json pretty print",
       "json minifier",
+      "format json",
+      "validate json",
+      "beautify json",
     ],
 
     related: [
@@ -46,6 +53,12 @@ export const tools: Tool[] = [
     longDescription:
       "Convert JSON objects into TypeScript interfaces or types directly in your browser. Customize the root type name and optional properties without sending your data anywhere.",
 
+    seoTitle:
+      "JSON to TypeScript Converter — Free Online Tool | DevToolkit",
+
+    seoDescription:
+      "Convert JSON to TypeScript interfaces and types online. Generate clean TypeScript definitions directly in your browser with no signup required.",
+
     category: "JSON",
 
     icon: "code",
@@ -53,14 +66,14 @@ export const tools: Tool[] = [
     route: "/tools/json-to-typescript",
 
     keywords: [
-      "json",
-      "typescript",
-      "interface",
-      "interfaces",
-      "type",
-      "types",
-      "converter",
       "json to typescript",
+      "json to typescript converter",
+      "json to interface",
+      "json to type",
+      "typescript interface generator",
+      "typescript type generator",
+      "json converter",
+      "json interface generator",
     ],
 
     related: [
@@ -80,6 +93,12 @@ export const tools: Tool[] = [
     longDescription:
       "Generate random UUIDs directly in your browser. Useful for development, testing, mock data and generating unique identifiers.",
 
+    seoTitle:
+      "UUID Generator — Generate UUID v4 Online | DevToolkit",
+
+    seoDescription:
+      "Generate random UUID v4 identifiers online for free. Create UUIDs instantly in your browser for development, testing and mock data.",
+
     category: "Utilities",
 
     icon: "fingerprint",
@@ -89,11 +108,12 @@ export const tools: Tool[] = [
     keywords: [
       "uuid",
       "uuid generator",
-      "guid",
-      "unique id",
-      "identifier",
-      "random id",
-      "uuid v4",
+      "uuid v4 generator",
+      "generate uuid",
+      "random uuid",
+      "guid generator",
+      "unique id generator",
+      "uuid online",
     ],
 
     related: [
@@ -113,6 +133,12 @@ export const tools: Tool[] = [
     longDescription:
       "Encode text to Base64 or decode Base64 strings directly in your browser. Supports Unicode and UTF-8 text without sending your data anywhere.",
 
+    seoTitle:
+      "Base64 Encoder & Decoder Online — Free | DevToolkit",
+
+    seoDescription:
+      "Encode and decode Base64 strings online for free. Convert text to Base64 or decode Base64 directly in your browser with Unicode and UTF-8 support.",
+
     category: "Encoding",
 
     icon: "binary",
@@ -123,10 +149,11 @@ export const tools: Tool[] = [
       "base64",
       "base64 encoder",
       "base64 decoder",
-      "encode",
-      "decode",
-      "encoding",
-      "decoder",
+      "base64 encode",
+      "base64 decode",
+      "encode base64",
+      "decode base64",
+      "base64 online",
     ],
 
     related: [
@@ -146,6 +173,12 @@ export const tools: Tool[] = [
     longDescription:
       "Build, test and debug regular expressions against sample text with instant feedback. View matches, indexes, lengths and capture groups directly in your browser.",
 
+    seoTitle:
+      "Regex Tester — Test Regular Expressions Online | DevToolkit",
+
+    seoDescription:
+      "Test and debug regular expressions online with instant match results, indexes, lengths and capture groups. Free browser-based regex tester.",
+
     category: "Regex",
 
     icon: "regex",
@@ -154,13 +187,14 @@ export const tools: Tool[] = [
 
     keywords: [
       "regex",
-      "regexp",
-      "regular expression",
       "regex tester",
-      "pattern",
-      "match",
-      "capture groups",
-      "javascript regex",
+      "regular expression tester",
+      "regex tester online",
+      "regexp tester",
+      "regular expression tester online",
+      "javascript regex tester",
+      "regex matcher",
+      "regex debugger",
     ],
 
     related: [
@@ -180,6 +214,12 @@ export const tools: Tool[] = [
     longDescription:
       "Decode JSON Web Tokens directly in your browser and inspect their header, payload and expiration information without sending the token to a server.",
 
+    seoTitle:
+      "JWT Decoder — Decode JSON Web Tokens Online | DevToolkit",
+
+    seoDescription:
+      "Decode and inspect JWT headers and payloads online for free. View JWT claims and expiration information directly in your browser.",
+
     category: "Utilities",
 
     icon: "key-round",
@@ -188,14 +228,14 @@ export const tools: Tool[] = [
 
     keywords: [
       "jwt",
-      "json web token",
-      "token",
-      "decode jwt",
       "jwt decoder",
-      "authentication",
-      "authorization",
-      "bearer token",
-      "access token",
+      "jwt decoder online",
+      "decode jwt",
+      "json web token decoder",
+      "jwt token decoder",
+      "jwt claims",
+      "jwt payload",
+      "jwt header",
     ],
 
     related: [

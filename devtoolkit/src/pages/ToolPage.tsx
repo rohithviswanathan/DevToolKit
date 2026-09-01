@@ -15,8 +15,8 @@ function ToolPage() {
     : undefined;
 
   const content = tool
-  ? toolContent[tool.id]
-  : undefined;
+    ? toolContent[tool.id]
+    : undefined;
 
   /*
    * ---------------------------------------------------------
@@ -30,8 +30,8 @@ function ToolPage() {
       return;
     }
 
-    const title = `${tool.name} | Free Online ${tool.name} | DevToolkit`;
-    const description = tool.longDescription;
+    const title = tool.seoTitle;
+    const description = tool.seoDescription;
 
     document.title = title;
 
@@ -61,7 +61,8 @@ function ToolPage() {
     /*
      * Canonical URL
      */
-    const canonicalUrl = `${window.location.origin}${tool.route}`;
+    const canonicalUrl =
+      `${window.location.origin}${tool.route}`;
 
     let canonicalTag = document.querySelector(
       'link[rel="canonical"]',
@@ -256,6 +257,62 @@ function ToolPage() {
       "content",
       "summary",
     );
+
+    /*
+     * ---------------------------------------------------------
+     * JSON-LD structured data
+     * ---------------------------------------------------------
+     *
+     * Describes the current tool to search engines as a
+     * browser-based software application.
+     */
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      name: tool.name,
+      description,
+      url: canonicalUrl,
+      applicationCategory:
+        "DeveloperApplication",
+      operatingSystem: "Any",
+      browserRequirements:
+        "Requires JavaScript",
+      offers: {
+        "@type": "Offer",
+        price: "0",
+        priceCurrency: "USD",
+      },
+    };
+
+    let jsonLd = document.querySelector(
+      'script[data-devtoolkit-jsonld="tool"]',
+    );
+
+    if (!jsonLd) {
+      jsonLd = document.createElement("script");
+
+      jsonLd.setAttribute(
+        "type",
+        "application/ld+json",
+      );
+
+      jsonLd.setAttribute(
+        "data-devtoolkit-jsonld",
+        "tool",
+      );
+
+      document.head.appendChild(jsonLd);
+    }
+
+    jsonLd.textContent =
+      JSON.stringify(structuredData);
+
+    /*
+     * Cleanup when leaving the tool page.
+     */
+    return () => {
+      jsonLd?.remove();
+    };
   }, [tool]);
 
   /*
@@ -365,7 +422,6 @@ function ToolPage() {
         aria-label={`${tool.name} workspace`}
         className="mt-8 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm sm:mt-10"
       >
-        {/* Workspace header */}
         <div className="flex min-h-12 items-center justify-between gap-4 border-b border-[var(--border)] px-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-2.5">
             <div
@@ -388,7 +444,6 @@ function ToolPage() {
           </span>
         </div>
 
-        {/* Tool */}
         <div className="min-w-0 p-4 sm:p-6">
           <ToolRenderer toolId={tool.id} />
         </div>
