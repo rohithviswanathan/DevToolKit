@@ -60,6 +60,24 @@ Build and inspect JavaScript regular expressions against sample text.
 - Copy the complete expression, including its flags.
 - Load an email-validation example or clear the workspace.
 
+### JWT Decoder
+
+Decode and inspect JSON Web Tokens directly in your browser.
+
+- Decode JWT headers, payloads, and verify signatures.
+- View JWT claims and expiration information.
+- Display errors for invalid or malformed tokens.
+- Copy decoded payload or download token information.
+- All decoding performed locally—tokens are never sent to a server.
+
+## Analytics
+
+DevToolkit uses PostHog for optional analytics to track tool usage and improve the user experience.
+
+- Analytics is only enabled when a PostHog API key is configured via environment variables (`VITE_POSTHOG_KEY` and `VITE_POSTHOG_HOST`).
+- Session replay masks all text inputs and elements marked with `.posthog-mask` to protect sensitive data in your tools.
+- Tool inputs and outputs remain private and are never captured.
+
 ## Privacy
 
 All transformations and tests run in the browser. DevToolkit does not upload JSON, text, regular expressions, or generated values to a backend. File loading is performed locally by the browser, and generated downloads are created in the browser as temporary text files.
@@ -120,6 +138,7 @@ npm run lint
 | `/tools/uuid-generator` | UUID Generator |
 | `/tools/base64` | Base64 Encoder / Decoder |
 | `/tools/regex-tester` | Regex Tester |
+| `/tools/jwt-decoder` | JWT Decoder |
 
 Unknown routes are rendered through the tool page and show a not-found state when no matching tool exists.
 
@@ -155,12 +174,21 @@ The theme is controlled through the document's `html.light` class and CSS variab
 
 ## Adding a Tool
 
-1. Add the tool metadata and route information to `src/data/tools.ts`.
+1. Add the tool metadata and route information to `src/data/tools.ts`, including SEO title, description, keywords, and related tools.
 2. Implement the workspace component under `src/components/tools/`.
 3. Add pure conversion or validation logic to `src/lib/` when appropriate.
 4. Register the component in `src/components/tools/ToolRenderer.tsx`.
 5. Add related tools and keywords to the metadata.
-6. Run `npm run lint` and `npm run build` from `devtoolkit/`.
+6. Run `npm run lint` and `npm run build` from the project root.
+
+## Environment Variables
+
+Optional environment variables for analytics configuration:
+
+- `VITE_POSTHOG_KEY`: PostHog API key for enabling analytics.
+- `VITE_POSTHOG_HOST`: PostHog API host (defaults to `https://us.i.posthog.com`).
+
+Create a `.env.local` file in the project root to set these variables.
 
 ## License
 
