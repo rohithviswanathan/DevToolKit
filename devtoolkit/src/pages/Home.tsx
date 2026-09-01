@@ -4,7 +4,186 @@ import { tools } from "../data/tools";
 
 function Home() {
   useEffect(() => {
-    document.title = "DevToolkit — Free Developer Tools";
+    const title = "DevToolkit — Free Developer Tools";
+
+    const description =
+      "Free online developer tools for JSON formatting, TypeScript generation, JWT decoding, regex testing, Base64 encoding and UUID generation. Fast, browser-based and no signup required.";
+
+    const canonicalUrl = window.location.origin;
+
+    document.title = title;
+
+    /*
+    * ---------------------------------------------------------
+    * Meta description
+    * ---------------------------------------------------------
+    */
+    let descriptionTag = document.querySelector(
+      'meta[name="description"]',
+    );
+
+    if (!descriptionTag) {
+      descriptionTag = document.createElement("meta");
+
+      descriptionTag.setAttribute(
+        "name",
+        "description",
+      );
+
+      document.head.appendChild(descriptionTag);
+    }
+
+    descriptionTag.setAttribute(
+      "content",
+      description,
+    );
+
+    /*
+    * ---------------------------------------------------------
+    * Canonical URL
+    * ---------------------------------------------------------
+    */
+    let canonicalTag = document.querySelector(
+      'link[rel="canonical"]',
+    );
+
+    if (!canonicalTag) {
+      canonicalTag = document.createElement("link");
+
+      canonicalTag.setAttribute(
+        "rel",
+        "canonical",
+      );
+
+      document.head.appendChild(canonicalTag);
+    }
+
+    canonicalTag.setAttribute(
+      "href",
+      canonicalUrl,
+    );
+
+    /*
+    * ---------------------------------------------------------
+    * Open Graph
+    * ---------------------------------------------------------
+    */
+    const setMeta = (
+      selector: string,
+      attribute: string,
+      value: string,
+    ) => {
+      let tag = document.querySelector(selector);
+
+      if (!tag) {
+        tag = document.createElement("meta");
+
+        tag.setAttribute(
+          attribute,
+          selector.includes("property=")
+            ? selector
+                .match(/property="([^"]+)"/)?.[1] ?? ""
+            : selector
+                .match(/name="([^"]+)"/)?.[1] ?? "",
+        );
+
+        document.head.appendChild(tag);
+      }
+
+      tag.setAttribute("content", value);
+    };
+
+    setMeta(
+      'meta[property="og:title"]',
+      "property",
+      title,
+    );
+
+    setMeta(
+      'meta[property="og:description"]',
+      "property",
+      description,
+    );
+
+    setMeta(
+      'meta[property="og:url"]',
+      "property",
+      canonicalUrl,
+    );
+
+    setMeta(
+      'meta[property="og:type"]',
+      "property",
+      "website",
+    );
+
+    /*
+    * ---------------------------------------------------------
+    * Twitter / X
+    * ---------------------------------------------------------
+    */
+    setMeta(
+      'meta[name="twitter:title"]',
+      "name",
+      title,
+    );
+
+    setMeta(
+      'meta[name="twitter:description"]',
+      "name",
+      description,
+    );
+
+    setMeta(
+      'meta[name="twitter:card"]',
+      "name",
+      "summary",
+    );
+
+    /*
+    * ---------------------------------------------------------
+    * Homepage JSON-LD
+    * ---------------------------------------------------------
+    */
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      name: "DevToolkit",
+      description,
+      url: canonicalUrl,
+    };
+
+    let jsonLd = document.querySelector(
+      'script[data-devtoolkit-jsonld="website"]',
+    );
+
+    if (!jsonLd) {
+      jsonLd = document.createElement("script");
+
+      jsonLd.setAttribute(
+        "type",
+        "application/ld+json",
+      );
+
+      jsonLd.setAttribute(
+        "data-devtoolkit-jsonld",
+        "website",
+      );
+
+      document.head.appendChild(jsonLd);
+    }
+
+    jsonLd.textContent =
+      JSON.stringify(structuredData);
+
+    /*
+    * ---------------------------------------------------------
+    * Cleanup
+    * ---------------------------------------------------------
+    */
+    return () => {
+      jsonLd?.remove();
+    };
   }, []);
 
   return (
