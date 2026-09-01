@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom";
 import { getToolById } from "../data/tools";
 import ToolCard from "../components/tools/ToolCard";
 import ToolRenderer from "../components/tools/ToolRenderer";
+import { toolContent } from "../data/toolContent";
 
 function ToolPage() {
   const { toolId } = useParams<{ toolId: string }>();
@@ -13,47 +14,247 @@ function ToolPage() {
     ? getToolById(toolId)
     : undefined;
 
+  const content = tool
+  ? toolContent[tool.id]
+  : undefined;
+
   /*
    * ---------------------------------------------------------
    * Dynamic SEO metadata
    * ---------------------------------------------------------
    */
-
   useEffect(() => {
     if (!tool) {
-      document.title =
-        "Tool Not Found | DevToolkit";
+      document.title = "Tool Not Found | DevToolkit";
 
       return;
     }
 
-    document.title = `${tool.name} | DevToolkit`;
+    const title = `${tool.name} | Free Online ${tool.name} | DevToolkit`;
+    const description = tool.longDescription;
 
-    const description =
-      tool.description;
+    document.title = title;
 
-    let descriptionTag =
-      document.querySelector(
-        'meta[name="description"]',
-      );
+    /*
+     * Meta description
+     */
+    let descriptionTag = document.querySelector(
+      'meta[name="description"]',
+    );
 
     if (!descriptionTag) {
-      descriptionTag =
-        document.createElement("meta");
+      descriptionTag = document.createElement("meta");
 
       descriptionTag.setAttribute(
         "name",
         "description",
       );
 
-      document.head.appendChild(
-        descriptionTag,
-      );
+      document.head.appendChild(descriptionTag);
     }
 
     descriptionTag.setAttribute(
       "content",
       description,
+    );
+
+    /*
+     * Canonical URL
+     */
+    const canonicalUrl = `${window.location.origin}${tool.route}`;
+
+    let canonicalTag = document.querySelector(
+      'link[rel="canonical"]',
+    );
+
+    if (!canonicalTag) {
+      canonicalTag = document.createElement("link");
+
+      canonicalTag.setAttribute(
+        "rel",
+        "canonical",
+      );
+
+      document.head.appendChild(canonicalTag);
+    }
+
+    canonicalTag.setAttribute(
+      "href",
+      canonicalUrl,
+    );
+
+    /*
+     * Open Graph title
+     */
+    let ogTitle = document.querySelector(
+      'meta[property="og:title"]',
+    );
+
+    if (!ogTitle) {
+      ogTitle = document.createElement("meta");
+
+      ogTitle.setAttribute(
+        "property",
+        "og:title",
+      );
+
+      document.head.appendChild(ogTitle);
+    }
+
+    ogTitle.setAttribute(
+      "content",
+      title,
+    );
+
+    /*
+     * Open Graph description
+     */
+    let ogDescription = document.querySelector(
+      'meta[property="og:description"]',
+    );
+
+    if (!ogDescription) {
+      ogDescription =
+        document.createElement("meta");
+
+      ogDescription.setAttribute(
+        "property",
+        "og:description",
+      );
+
+      document.head.appendChild(
+        ogDescription,
+      );
+    }
+
+    ogDescription.setAttribute(
+      "content",
+      description,
+    );
+
+    /*
+     * Open Graph URL
+     */
+    let ogUrl = document.querySelector(
+      'meta[property="og:url"]',
+    );
+
+    if (!ogUrl) {
+      ogUrl = document.createElement("meta");
+
+      ogUrl.setAttribute(
+        "property",
+        "og:url",
+      );
+
+      document.head.appendChild(ogUrl);
+    }
+
+    ogUrl.setAttribute(
+      "content",
+      canonicalUrl,
+    );
+
+    /*
+     * Open Graph type
+     */
+    let ogType = document.querySelector(
+      'meta[property="og:type"]',
+    );
+
+    if (!ogType) {
+      ogType = document.createElement("meta");
+
+      ogType.setAttribute(
+        "property",
+        "og:type",
+      );
+
+      document.head.appendChild(ogType);
+    }
+
+    ogType.setAttribute(
+      "content",
+      "website",
+    );
+
+    /*
+     * Twitter title
+     */
+    let twitterTitle = document.querySelector(
+      'meta[name="twitter:title"]',
+    );
+
+    if (!twitterTitle) {
+      twitterTitle =
+        document.createElement("meta");
+
+      twitterTitle.setAttribute(
+        "name",
+        "twitter:title",
+      );
+
+      document.head.appendChild(
+        twitterTitle,
+      );
+    }
+
+    twitterTitle.setAttribute(
+      "content",
+      title,
+    );
+
+    /*
+     * Twitter description
+     */
+    let twitterDescription =
+      document.querySelector(
+        'meta[name="twitter:description"]',
+      );
+
+    if (!twitterDescription) {
+      twitterDescription =
+        document.createElement("meta");
+
+      twitterDescription.setAttribute(
+        "name",
+        "twitter:description",
+      );
+
+      document.head.appendChild(
+        twitterDescription,
+      );
+    }
+
+    twitterDescription.setAttribute(
+      "content",
+      description,
+    );
+
+    /*
+     * Twitter card
+     */
+    let twitterCard = document.querySelector(
+      'meta[name="twitter:card"]',
+    );
+
+    if (!twitterCard) {
+      twitterCard =
+        document.createElement("meta");
+
+      twitterCard.setAttribute(
+        "name",
+        "twitter:card",
+      );
+
+      document.head.appendChild(
+        twitterCard,
+      );
+    }
+
+    twitterCard.setAttribute(
+      "content",
+      "summary",
     );
   }, [tool]);
 
@@ -62,7 +263,6 @@ function ToolPage() {
    * Tool not found
    * ---------------------------------------------------------
    */
-
   if (!tool) {
     return (
       <main className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-7xl items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
@@ -104,7 +304,6 @@ function ToolPage() {
    * Related tools
    * ---------------------------------------------------------
    */
-
   const relatedTools = tool.related
     .map((id) => getToolById(id))
     .filter(Boolean);
@@ -132,7 +331,10 @@ function ToolPage() {
           /
         </span>
 
-        <span className="min-w-0 truncate text-[var(--muted)]">
+        <span
+          aria-current="page"
+          className="min-w-0 truncate text-[var(--muted)]"
+        >
           {tool.name}
         </span>
       </nav>
@@ -159,11 +361,17 @@ function ToolPage() {
       {/* =====================================================
           Workspace
       ===================================================== */}
-      <section className="mt-8 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm sm:mt-10">
+      <section
+        aria-label={`${tool.name} workspace`}
+        className="mt-8 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm sm:mt-10"
+      >
         {/* Workspace header */}
         <div className="flex min-h-12 items-center justify-between gap-4 border-b border-[var(--border)] px-4 sm:px-5">
           <div className="flex min-w-0 items-center gap-2.5">
-            <div className="flex size-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent)]/10">
+            <div
+              aria-hidden="true"
+              className="flex size-6 shrink-0 items-center justify-center rounded-md bg-[var(--accent)]/10"
+            >
               <Wrench
                 size={13}
                 className="text-[var(--accent)]"
@@ -189,29 +397,80 @@ function ToolPage() {
       {/* =====================================================
           About
       ===================================================== */}
-      <section className="mt-12 max-w-3xl sm:mt-14">
-        <h2 className="text-lg font-semibold tracking-tight text-[var(--foreground)]">
-          About {tool.name}
-        </h2>
+      {content && (
+        <section
+          aria-labelledby="tool-guide-heading"
+          className="mt-12 max-w-3xl sm:mt-14"
+        >
+          <div>
+            <h2
+              id="tool-guide-heading"
+              className="text-xl font-semibold tracking-tight text-[var(--foreground)]"
+            >
+              About {tool.name}
+            </h2>
 
-        <p className="mt-3 text-sm leading-7 text-[var(--muted)]">
-          {tool.longDescription}
-        </p>
+            <p className="mt-4 text-sm leading-7 text-[var(--muted)] sm:text-base">
+              {content.intro}
+            </p>
+          </div>
 
-        <div className="mt-5 flex flex-wrap gap-2">
-          <span className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs text-[var(--subtle)]">
-            Free to use
-          </span>
+          <div className="mt-10 space-y-9">
+            {content.sections.map((section) => (
+              <section key={section.title}>
+                <h3 className="text-base font-semibold text-[var(--foreground)]">
+                  {section.title}
+                </h3>
 
-          <span className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs text-[var(--subtle)]">
-            No signup required
-          </span>
+                {section.paragraphs?.map((paragraph) => (
+                  <p
+                    key={paragraph}
+                    className="mt-3 text-sm leading-7 text-[var(--muted)]"
+                  >
+                    {paragraph}
+                  </p>
+                ))}
 
-          <span className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs text-[var(--subtle)]">
-            Browser-based
-          </span>
-        </div>
-      </section>
+                {section.steps && (
+                  <ol className="mt-4 space-y-3">
+                    {section.steps.map((step, index) => (
+                      <li
+                        key={step}
+                        className="flex gap-3 text-sm leading-6 text-[var(--muted)]"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="flex size-6 shrink-0 items-center justify-center rounded-md border border-[var(--border)] bg-[var(--surface)] text-xs font-medium text-[var(--subtle)]"
+                        >
+                          {index + 1}
+                        </span>
+
+                        <span className="pt-0.5">
+                          {step}
+                        </span>
+                      </li>
+                    ))}
+                  </ol>
+                )}
+              </section>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap gap-2 border-t border-[var(--border)] pt-6">
+            <span className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs text-[var(--subtle)]">
+              Free to use
+            </span>
+
+            <span className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs text-[var(--subtle)]">
+              No signup required
+            </span>
+
+            <span className="rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-1.5 text-xs text-[var(--subtle)]">
+              Browser-based
+            </span>
+          </div>
+        </section>
+      )}
 
       {/* =====================================================
           Related Tools

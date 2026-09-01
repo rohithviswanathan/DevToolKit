@@ -34,6 +34,7 @@ function ToolCard({
     <Link
       to={tool.route}
       aria-label={`Open ${tool.name}`}
+      title={`Open ${tool.name}`}
       className={[
         "group flex h-full min-h-[170px] flex-col",
         "rounded-2xl border border-[var(--border)]",
@@ -56,7 +57,10 @@ function ToolCard({
       ===================================================== */}
       <div className="flex items-start justify-between gap-4">
         {/* Icon */}
-        <div className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] transition-colors duration-200 group-hover:border-[var(--accent)]/20 group-hover:bg-[var(--accent)]/5 motion-reduce:transition-none">
+        <div
+          aria-hidden="true"
+          className="flex size-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.04] transition-colors duration-200 group-hover:border-[var(--accent)]/20 group-hover:bg-[var(--accent)]/5 motion-reduce:transition-none"
+        >
           {Icon ? (
             <Icon
               size={19}
@@ -91,11 +95,14 @@ function ToolCard({
       ===================================================== */}
       <div className="mt-auto pt-8">
         <div className="mb-2 flex flex-wrap items-center gap-2">
-          <h3 className="min-w-0 font-medium tracking-tight text-[var(--foreground)]">
+          <h2 className="min-w-0 text-base font-medium tracking-tight text-[var(--foreground)]">
             {tool.name}
-          </h3>
+          </h2>
 
-          <span className="shrink-0 rounded-md border border-[var(--border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--subtle)]">
+          <span
+            aria-hidden="true"
+            className="shrink-0 rounded-md border border-[var(--border)] bg-[var(--background)] px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-[var(--subtle)]"
+          >
             {tool.category}
           </span>
         </div>

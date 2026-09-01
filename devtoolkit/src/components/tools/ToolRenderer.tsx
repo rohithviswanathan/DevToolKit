@@ -110,7 +110,9 @@ function ToolRenderer({
    */
   return (
     <Suspense fallback={<ToolLoading />}>
-      <ToolComponent />
+      <div className="posthog-mask">
+        <ToolComponent />
+      </div>
     </Suspense>
   );
 }
