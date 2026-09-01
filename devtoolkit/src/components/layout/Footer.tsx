@@ -1,4 +1,3 @@
-import { ShieldCheck } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import Logo from "./Logo";
@@ -17,59 +16,29 @@ function Footer() {
               Fast, focused developer utilities that
               run directly in your browser.
             </p>
-
-            <div className="mt-4 inline-flex items-center gap-2 text-xs text-[var(--subtle)]">
-              <ShieldCheck
-                size={14}
-                className="text-[var(--success)]"
-                aria-hidden="true"
-              />
-
-              <span>
-                Tool data stays in your browser.
-              </span>
-            </div>
           </div>
 
           {/* Links */}
           <div className="flex flex-wrap gap-x-10 gap-y-6">
-            {/* Tools */}
-            <div>
-              <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--foreground)]">
-                Tools
-              </h2>
-
-              <nav className="mt-3 flex flex-col gap-2">
-                <Link
-                  to="/#tools"
-                  className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-                >
-                  All tools
-                </Link>
-              </nav>
-            </div>
 
             {/* Project */}
             <div>
               <h2 className="text-xs font-semibold uppercase tracking-wide text-[var(--foreground)]">
-                Project
+                Policy
               </h2>
 
               <nav className="mt-3 flex flex-col gap-2">
-                <a
-                  href="https://github.com/rohithviswanathan"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-                >
-                  GitHub
-                </a>
-
                 <Link
                   to="/privacy"
                   className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
                 >
                   Privacy
+                </Link>
+                <Link
+                  to="/terms"
+                  className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
+                >
+                  Terms of Use
                 </Link>
               </nav>
             </div>
